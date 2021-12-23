@@ -1,0 +1,129 @@
+use t3nz0r;
+
+show tables ;
+
+select * from application;
+select * from department;
+
+select * from client;
+
+select * from client  where length(FirstName) < 6;
+
+select * from department  where DepartmentCity like '%Lviv%';
+
+select * from client where Education like '%high%' order by LastName;
+
+select * from application order by idApplication desc limit 5;
+
+select * from client where LastName like '%ov' or LastName like '%ova';
+
+select * from client join department d on d.idDepartment = client.Department_idDepartment where DepartmentCity like '%kyiv%';
+
+select distinct FirstName from client;
+
+select distinct client.* from client join application a on client.idClient = a.Client_idClient where Sum > 5000;
+
+select count(*) from client join department d on d.idDepartment = client.Department_idDepartment
+union
+select count(*) from client join department d2 on d2.idDepartment = client.Department_idDepartment where DepartmentCity like '%lviv%';
+
+select max(Sum), client.* from client join application a on client.idClient = a.Client_idClient group by idClient, FirstName, LastName;
+
+select count(*), idClient, FirstName from client join application a on client.idClient = a.Client_idClient group by idClient, FirstName;
+
+select min(Sum), max(Sum) from application;
+
+select count(*), idClient, FirstName, Education from client join application a on client.idClient = a.Client_idClient
+where Education like '%high%' group by idClient, FirstName, Education;
+
+select avg(Sum), client.* from client join application a on client.idClient = a.Client_idClient group by idClient order by avg(Sum) desc limit 1;
+
+select sum(Sum), DepartmentCity from department
+join client c on department.idDepartment = c.Department_idDepartment
+join application a on c.idClient = a.Client_idClient
+group by idDepartment order by sum(Sum) desc limit 1;
+
+select max(Sum), DepartmentCity from department
+    join client c on department.idDepartment = c.Department_idDepartment
+    join application a on c.idClient = a.Client_idClient
+group by idDepartment order by max(Sum) desc limit 1;
+
+update client
+join application a on client.idClient = a.Client_idClient
+set Sum = 6000
+where Education like '%high%';
+
+select * from client
+join application a on client.idClient = a.Client_idClient where Education like '%high%';
+
+update client
+    join department d on client.Department_idDepartment = d.idDepartment
+set City = 'Kyiv'
+where DepartmentCity like '%kyiv%';
+
+select * from client
+join department d on d.idDepartment = client.Department_idDepartment;
+
+delete application
+from application
+where CreditState like 'returned';
+
+delete application
+from application
+join client c on c.idClient = application.Client_idClient
+where LastName rlike '^.[aeoui].*';
+
+select * from application
+join client c on c.idClient = application.Client_idClient;
+
+select sum(Sum) as sum, idDepartment, DepartmentCity
+from department
+join client c on department.idDepartment = c.Department_idDepartment
+join application a on c.idClient = a.Client_idClient
+where DepartmentCity = 'lviv'
+and sum > 5000
+group by idDepartment, DepartmentCity;
+
+select * from client
+join application a on client.idClient = a.Client_idClient
+where CreditState = 'returned'
+and Sum > 5000;
+
+select max(Sum) as max, FirstName, LastName
+from client
+join application a on client.idClient = a.Client_idClient
+where CreditState like 'not returned'
+group by FirstName, LastName order by max desc limit 1;
+
+select min(Sum) as min, FirstName, LastName
+from client
+join application a on client.idClient = a.Client_idClient
+group by FirstName, LastName
+order by min limit 1;
+
+select *
+from application
+where Sum > (select avg(Sum) from application);
+
+select * from client
+where City = (select City from client
+join application a on client.idClient = a.Client_idClient
+group by idClient
+order by count(idApplication) desc limit 1
+);
+
+select City from client
+join application a on client.idClient = a.Client_idClient
+group by idClient
+order by count(idApplication) desc limit 1;
+
+
+
+
+
+
+
+
+
+
+
