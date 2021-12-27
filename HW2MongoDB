@@ -1,0 +1,167 @@
+1) Знайти всіх дітей в яких сердня оцінка 4.2
+
+.find({
+    avgScore: 4.2
+    })
+
+2) Знайди всіх дітей з 1 класу
+
+find({
+    class: 1
+    })
+
+3) Знайти всіх дітей які вивчають фізику
+
+.find({
+lessons: /Physics/i
+    })
+
+4) Знайти всіх дітей, батьки яких працюють в науці ( scientist )
+
+find({
+"parents.profession": /scientist/i
+    })
+
+5) Знайти дітей, в яких середня оцінка більша за 4
+
+find({
+    avgScore: {$gte: 4},
+    })
+
+6) Знайти найкращого учня
+
+aggregate([
+{$sort:{avgScore:-1}},
+{$limit: 1}
+])
+
+7) Знайти найгіршого учня
+
+aggregate([
+{$sort:{avgScore:1}},
+{$limit: 1}
+])
+
+8) Знайти топ 3 учнів
+
+aggregate([
+{$sort:{avgScore:-1}},
+{$limit: 3}
+])
+
+9) Знайти середній бал по школі
+
+aggregate([
+{
+    $group:{
+        _id: "avgScore",
+        avg : {$avg:"$avgScore"}
+        }
+    }
+])
+
+10) Знайти середній бал дітей які вивчають математику або фізику
+
+aggregate([
+
+{
+    $match:{
+        $or:[{lessons: /physics/i}, {lessons: /mathematics/i}]
+        }
+    },
+    {
+    $group:{
+        _id: "avgScore",
+        avg : {$avg:"$avgScore"}
+        }
+    }
+])
+
+11) Знайти середній бал по 2 класі
+
+aggregate([
+
+{
+    $match:{
+        class:2
+        }
+    },
+    {
+    $group:{
+        _id: "avgScore",
+        avg : {$avg:"$avgScore"}
+        }
+    }
+])
+
+12) Знайти дітей з не повною сімєю
+
+find({
+    $or:[
+    {parents: {$size:1}},
+    {parents: null}]
+    })
+
+13) Знайти батьків які не працюють
+
+find({
+   "parents.profession": null
+    })
+
+14) Вигнати дітей, які мають середній бал менше ніж 2.5
+
+deleteMany({
+    avgScore:{$lt:2.5}
+    })
+
+15) Дітям, батьки яких працюють в освіті ( teacher ) поставити 5
+
+updateMany({
+
+        "parents.profession": "teacher"
+    },
+    {
+        $set:{avgScore:5}
+        })
+
+16) Знайти дітей які вчаться в початковій школі (до 5 класу) і вивчають фізику ( physics )
+
+find({
+    class: {$lt:5},
+    lessons: /physics/i
+    })
+
+17) Знайти найуспішніший клас
+
+aggregate([
+{
+   $group:{
+       _id: "$class",
+       avg: {$avg:"$avgScore"}
+       }
+    },
+    {
+        $sort: {avg: -1}
+        },
+        {
+            $limit:1
+            }
+
+    ])
+
+
+********** Не працюючих батьків влаштувати офіціантами (підказка: гуглимо "arrayFilters")
+updateMany(
+   {
+       parents: {$ne: null},
+       "parents.profession": null
+   },
+   { $set : { "parents.$[parent].profession" : "waiter"} },
+   { arrayFilters : [ {"parent.profession" : null } ] }
+)
+
+
+
+
+
+
